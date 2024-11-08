@@ -12,13 +12,13 @@ import (
 	"time"
 )
 
-// Настройки буферизации
+// Настройки буферизации.
 const (
 	defaultBufferSize    = 5               // Размер буфера
 	defaultFlushInterval = 5 * time.Second // Интервал очистки буфера
 )
 
-// RingBuffer - структура для кольцевого буфера
+// RingBuffer - структура для кольцевого буфера.
 type RingBuffer struct {
 	data []int
 	head int
@@ -27,7 +27,7 @@ type RingBuffer struct {
 	mu   sync.Mutex
 }
 
-// NewRingBuffer - создание нового кольцевого буфера
+// NewRingBuffer - создание нового кольцевого буфера.
 func NewRingBuffer(size int) *RingBuffer {
 	return &RingBuffer{
 		data: make([]int, size),
@@ -35,7 +35,7 @@ func NewRingBuffer(size int) *RingBuffer {
 	}
 }
 
-// Push - добавление элемента в буфер
+// Push - добавление элемента в буфер.
 func (rb *RingBuffer) Push(val int) {
 	rb.mu.Lock()
 	defer rb.mu.Unlock()
@@ -47,7 +47,7 @@ func (rb *RingBuffer) Push(val int) {
 	}
 }
 
-// Flush - получение всех элементов из буфера с очисткой
+// Flush - получение всех элементов из буфера с очисткой.
 func (rb *RingBuffer) Flush() []int {
 	rb.mu.Lock()
 	defer rb.mu.Unlock()
@@ -64,7 +64,7 @@ func (rb *RingBuffer) Flush() []int {
 	return data
 }
 
-// Стадия пайплайна: фильтр отрицательных чисел
+// Стадия пайплайна: фильтр отрицательных чисел.
 func filterNegative(in <-chan int, out chan<- int, done <-chan bool) {
 	defer close(out)
 	for {
@@ -79,7 +79,7 @@ func filterNegative(in <-chan int, out chan<- int, done <-chan bool) {
 	}
 }
 
-// Стадия пайплайна: фильтр чисел, не кратных 3 (исключая 0)
+// Стадия пайплайна: фильтр чисел, не кратных 3 (исключая 0).
 func filterNotDivisibleBy3(in <-chan int, out chan<- int, done <-chan bool) {
 	defer close(out)
 	for {
@@ -94,7 +94,7 @@ func filterNotDivisibleBy3(in <-chan int, out chan<- int, done <-chan bool) {
 	}
 }
 
-// Стадия пайплайна: буферизация и периодическая отправка данных
+// Стадия пайплайна: буферизация и периодическая отправка данных.
 func bufferAndSend(in <-chan int, out chan<- int, done <-chan bool, bufferSize int, flushInterval time.Duration) {
 	defer close(out)
 	buffer := NewRingBuffer(bufferSize)
